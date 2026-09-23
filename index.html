@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>IQ Test</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0c1d;--card:#1a1730;--card2:#231f3a;--bdr:#312d50;
+  --pu:#6c63ff;--pu2:#9f9aff;--gold:#f5c842;
+  --tx:#ede9ff;--tx2:#8b87b8;--gr:#22c55e;--rd:#f87171;--r:12px;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+.screen{display:none;min-height:100dvh;flex-direction:column}
+.screen.active{display:flex}
+
+/* WELCOME */
+#sw{align-items:center;justify-content:center;text-align:center;padding:32px 24px 120px}
+.logo{font-size:64px;margin-bottom:18px}
+#sw h1{font-size:24px;font-weight:800;margin-bottom:8px;background:linear-gradient(135deg,#9f9aff,#6c63ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+#sw .sub{color:var(--tx2);font-size:13px;margin-bottom:24px;line-height:1.7}
+.tags{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:28px}
+.tag{background:var(--card2);border:1px solid var(--bdr);border-radius:20px;padding:5px 13px;font-size:12px;color:var(--tx2)}
+.btn-p{width:100%;max-width:340px;padding:15px;border:none;border-radius:var(--r);background:linear-gradient(135deg,#6c63ff,#9f9aff);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+.btn-p:active{opacity:.88}
+.btn-o{width:100%;max-width:340px;padding:13px;border:1px solid var(--bdr);border-radius:var(--r);background:transparent;color:var(--tx2);font-size:14px;cursor:pointer;margin-top:10px}
+
+/* FORM */
+#sf{padding:0}
+.ph{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bdr);background:var(--card)}
+.bk{background:none;border:none;color:var(--tx2);font-size:22px;cursor:pointer}
+.ph h2{font-size:17px;font-weight:700}
+.fb{padding:20px;padding-bottom:120px}
+.fg{margin-bottom:18px}
+.fg label{font-size:11px;color:var(--tx2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:.5px}
+.fi{width:100%;padding:13px 14px;background:var(--card2);border:1px solid var(--bdr);border-radius:var(--r);color:var(--tx);font-size:15px;outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--pu)}
+.gr2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gr4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px}
+.sb{padding:11px 6px;border:1px solid var(--bdr);border-radius:var(--r);background:var(--card2);color:var(--tx2);font-size:13px;cursor:pointer;text-align:center;transition:all .2s}
+.sb.on{border-color:var(--pu);background:rgba(108,99,255,.15);color:var(--pu2)}
+.fbt{position:fixed;bottom:0;left:0;right:0;padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:1px solid var(--bdr)}
+.fbt .btn-p{max-width:100%}
+
+/* TEST */
+#st{padding:0;overflow-y:auto}
+.th{padding:12px 16px 10px;background:var(--card);border-bottom:1px solid var(--bdr);position:sticky;top:0;z-index:10}
+.pw{height:6px;background:var(--bdr);border-radius:3px;margin-bottom:8px;overflow:hidden}
+.pf{height:100%;background:linear-gradient(90deg,#6c63ff,#9f9aff);border-radius:3px;transition:width .4s}
+.tm{display:flex;justify-content:space-between;align-items:center}
+.tm span{font-size:12px;color:var(--tx2)}
+.tc{font-size:12px;font-weight:600;color:var(--pu2)}
+.qa{padding:16px 16px 12px}
+.qcat{display:inline-flex;align-items:center;gap:5px;background:var(--card2);border:1px solid var(--bdr);border-radius:20px;padding:4px 12px;font-size:11px;margin-bottom:12px}
+.ql{font-size:15px;font-weight:600;color:var(--tx);margin-bottom:16px;line-height:1.5}
+.qvbox{background:var(--card2);border:1px solid var(--bdr);border-radius:14px;padding:12px;margin-bottom:16px;display:flex;justify-content:center;align-items:center;min-height:160px}
+.qvbox svg{width:100%;max-width:280px;height:auto;display:block}
+
+/* TEXT ANSWERS */
+.aol{display:flex;flex-direction:column;gap:8px}
+.ao{padding:13px 16px;background:var(--card2);border:2px solid var(--bdr);border-radius:var(--r);cursor:pointer;font-size:14px;color:var(--tx);text-align:left;display:flex;align-items:center;gap:10px;width:100%;transition:all .15s}
+.ao .ltr{width:26px;height:26px;border-radius:50%;border:2px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--tx2);flex-shrink:0}
+.ao.cor{border-color:var(--gr)!important;background:rgba(34,197,94,.12)!important}
+.ao.cor .ltr{border-color:var(--gr);background:var(--gr);color:#000}
+.ao.wrg{border-color:var(--rd)!important;background:rgba(248,113,113,.12)!important}
+.ao.wrg .ltr{border-color:var(--rd);background:var(--rd);color:#fff}
+.ao.shw{border-color:var(--gr)!important}
+.ao.shw .ltr{border-color:var(--gr);color:var(--gr)}
+
+/* VISUAL ANSWERS */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
+.vopt{background:var(--card2);border:2.5px solid var(--bdr);border-radius:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;min-height:100px;position:relative;overflow:hidden;transition:all .2s}
+.vopt svg{width:100%;height:auto;max-height:90px;display:block}
+.vopt .vltr{position:absolute;top:5px;left:8px;font-size:10px;font-weight:700;color:var(--tx2)}
+.vopt:active{transform:scale(.97)}
+.vopt.cor{border-color:var(--gr)!important;background:rgba(34,197,94,.12)!important}
+.vopt.wrg{border-color:var(--rd)!important;background:rgba(248,113,113,.12)!important}
+.vopt.shw{border-color:var(--gr)!important;background:rgba(34,197,94,.07)!important}
+
+.nxt{margin:12px 16px 24px;width:calc(100% - 32px);padding:14px;border:none;border-radius:var(--r);background:linear-gradient(135deg,#6c63ff,#9f9aff);color:#fff;font-size:15px;font-weight:600;cursor:pointer;display:none}
+
+/* LOADING */
+#sl{align-items:center;justify-content:center;padding:40px;gap:20px;text-align:center}
+.sp{width:56px;height:56px;border:4px solid var(--bdr);border-top-color:var(--pu);border-radius:50%;animation:sp 1s linear infinite;margin-bottom:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ls-list{display:flex;flex-direction:column;gap:10px;max-width:280px;text-align:left}
+.ls{font-size:13px;color:var(--tx2);opacity:0;transition:all .4s;padding:8px 12px;background:var(--card);border-radius:8px}
+.ls.sh{opacity:1}.ls.dn{color:var(--gr)}
+
+/* RESULT */
+#sr{padding:24px 20px 120px;align-items:center;text-align:center;overflow-y:auto}
+.iq-ring{width:150px;height:150px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;position:relative}
+.iq-ring svg.rsvg{position:absolute;top:0;left:0;width:150px;height:150px}
+.iq-inner{width:126px;height:126px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#9f9aff);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(108,99,255,.4);z-index:1}
+.iq-num{font-size:50px;font-weight:900;color:#fff;line-height:1}
+.iq-lbl{font-size:10px;color:rgba(255,255,255,.65);margin-top:2px}
+.lvl-badge{display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-bottom:14px}
+#sr h2{font-size:20px;font-weight:700;margin-bottom:6px}
+.iq-cm{color:var(--tx2);font-size:13px;margin-bottom:20px;line-height:1.6;max-width:300px}
+.stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;width:100%;margin-bottom:20px}
+.stat-c{background:var(--card2);border:1px solid var(--bdr);border-radius:12px;padding:12px 8px;text-align:center}
+.stat-v{font-size:20px;font-weight:800;color:var(--pu2)}
+.stat-l{font-size:10px;color:var(--tx2);margin-top:3px}
+.catbars{width:100%;margin-bottom:20px}
+.cb-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.cb-lbl{font-size:12px;color:var(--tx2);width:80px;text-align:left;flex-shrink:0}
+.cb-bar{flex:1;height:8px;background:var(--bdr);border-radius:4px;overflow:hidden}
+.cb-fill{height:100%;border-radius:4px;width:0;transition:width 1.2s ease}
+.cb-pct{font-size:12px;color:var(--pu2);font-weight:600;width:32px;text-align:right;flex-shrink:0}
+
+/* CERTIFICATE */
+.cert-wrap{width:100%;margin-bottom:20px}
+.cert-card{background:linear-gradient(135deg,#1a1730,#231f3a);border:1.5px solid var(--pu);border-radius:16px;padding:24px 20px;text-align:center;position:relative;overflow:hidden}
+.cert-card::before{content:'';position:absolute;top:-50px;right:-50px;width:130px;height:130px;border-radius:50%;background:rgba(108,99,255,.07)}
+.cert-card::after{content:'';position:absolute;bottom:-40px;left:-40px;width:110px;height:110px;border-radius:50%;background:rgba(108,99,255,.05)}
+.cert-top{font-size:10px;color:var(--tx2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.cert-brain{font-size:34px;margin-bottom:6px}
+.cert-title{font-size:12px;font-weight:700;color:var(--pu2);margin-bottom:8px;letter-spacing:.5px;text-transform:uppercase}
+.cert-name{font-size:20px;font-weight:800;color:var(--tx);margin-bottom:14px}
+.cert-iq-box{background:rgba(108,99,255,.15);border:1px solid rgba(108,99,255,.4);border-radius:12px;padding:12px 24px;display:inline-block;margin-bottom:10px}
+.cert-iq-num{font-size:52px;font-weight:900;background:linear-gradient(135deg,#f5c842,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.cert-iq-lbl{font-size:10px;color:var(--tx2);margin-top:2px}
+.cert-lvl{font-size:13px;color:var(--pu2);font-weight:600;margin-bottom:12px}
+.cert-row{display:flex;justify-content:center;gap:20px;font-size:11px;color:var(--tx2);margin-bottom:12px}
+.cert-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:14px}
+.cbadge{font-size:11px;padding:3px 10px;border-radius:10px;background:rgba(108,99,255,.2);border:1px solid var(--pu);color:var(--pu2)}
+.cert-footer{font-size:10px;color:var(--tx2);border-top:1px solid var(--bdr);padding-top:10px}
+
+.rbs{display:flex;flex-direction:column;gap:10px;width:100%}
+.btn-gold{padding:14px;border:1.5px solid var(--gold);border-radius:var(--r);background:transparent;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.btn-gold:active{background:rgba(245,200,66,.1)}
+.btn-pu{padding:14px;border:none;border-radius:var(--r);background:linear-gradient(135deg,#6c63ff,#9f9aff);color:#fff;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.btn-gr{padding:13px;border:1px solid var(--bdr);border-radius:var(--r);background:transparent;color:var(--tx2);font-size:14px;cursor:pointer;width:100%}
+
+/* RATING */
+#srt{padding:0}
+.rl{padding:12px 14px 100px;overflow-y:auto}
+.ri{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);border:1px solid var(--bdr);border-radius:12px;margin-bottom:8px}
+.ri.me{border-color:var(--pu);background:rgba(108,99,255,.08)}
+.rk{font-size:17px;font-weight:800;min-width:28px;text-align:center}
+.rin{flex:1;min-width:0}
+.rn{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs{font-size:11px;color:var(--tx2);margin-top:2px}
+.riq{font-size:22px;font-weight:800;color:var(--pu2)}
+.emp{text-align:center;padding:60px 20px;color:var(--tx2);font-size:13px}
+
+/* NAV */
+.bnv{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--bdr);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:100}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;color:var(--tx2);font-size:9px;cursor:pointer;padding:4px 0}
+.nb.on{color:var(--pu2)}
+.ni{font-size:20px}
+#st .bnv,#sl .bnv{display:none!important}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="screen active" id="sw">
+  <div class="logo">🧠</div>
+  <h1>IQ Test</h1>
+  <p class="sub">BrainManager metodologiyasi asosida<br>20 ta savol · Bepul natija · Sertifikat</p>
+  <div class="tags">
+    <div class="tag">🔢 Raqamli</div><div class="tag">👁 Vizual</div>
+    <div class="tag">🔠 Verbal</div><div class="tag">📐 Fazoviy</div><div class="tag">⚡ Mantiqiy</div>
+  </div>
+  <button class="btn-p" onclick="goForm()">Testni Boshlash →</button>
+  <button class="btn-o" onclick="goRating()">🏆 Reyting</button>
+  <div class="bnv">
+    <button class="nb on" onclick="showScr('sw')"><div class="ni">🏠</div>Bosh</button>
+    <button class="nb" onclick="goRating()"><div class="ni">🏆</div>Reyting</button>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="screen" id="sf">
+  <div class="ph"><button class="bk" onclick="showScr('sw')">←</button><h2>Ma'lumotlaringiz</h2></div>
+  <div class="fb">
+    <div class="fg"><label>Ism Familiya</label><input class="fi" id="inp" type="text" placeholder="To'liq ismingiz" maxlength="40"/></div>
+    <div class="fg"><label>Jins</label><div class="gr2"><button class="sb" id="gm" onclick="sg('m')">👦 O'g'il</button><button class="sb" id="gf" onclick="sg('f')">👧 Qiz</button></div></div>
+    <div class="fg"><label>Yosh</label><div class="gr4"><button class="sb" onclick="sa(this,'<18')">18-</button><button class="sb" onclick="sa(this,'18-25')">18–25</button><button class="sb" onclick="sa(this,'26-35')">26–35</button><button class="sb" onclick="sa(this,'36+')">36+</button></div></div>
+  </div>
+  <div class="fbt"><button class="btn-p" onclick="startTest()">Testni Boshlash →</button></div>
+</div>
+
+<!-- TEST -->
+<div class="screen" id="st">
+  <div class="th">
+    <div class="pw"><div class="pf" id="pf"></div></div>
+    <div class="tm"><span id="qn">1 / 20</span><span class="tc" id="qsc">✓ 0</span></div>
+  </div>
+  <div class="qa">
+    <div id="qcat" class="qcat"></div>
+    <div class="ql" id="ql"></div>
+    <div id="qvbox" class="qvbox" style="display:none"></div>
+    <div id="qans"></div>
+  </div>
+  <button class="nxt" id="nxt" onclick="nextQ()">Keyingisi →</button>
+</div>
+
+<!-- LOADING -->
+<div class="screen" id="sl">
+  <div class="sp"></div>
+  <div>
+    <div style="font-size:17px;font-weight:700;margin-bottom:16px">Natijangiz tahlil qilinmoqda...</div>
+    <div class="ls-list">
+      <div class="ls" id="l1">🔢 Raqamli mantiq tahlili</div>
+      <div class="ls" id="l2">👁 Vizual fikrlash baholanmoqda</div>
+      <div class="ls" id="l3">🔠 Verbal qobiliyat tekshirilmoqda</div>
+      <div class="ls" id="l4">📐 Fazoviy tasavvur o'lchanmoqda</div>
+      <div class="ls" id="l5">🌍 Dunyo reytingi bilan solishtirilmoqda</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="sr">
+  <div class="iq-ring">
+    <svg class="rsvg" viewBox="0 0 150 150">
+      <circle cx="75" cy="75" r="70" fill="none" stroke="#312d50" stroke-width="8"/>
+      <circle cx="75" cy="75" r="70" fill="none" stroke="url(#rg)" stroke-width="8"
+        stroke-linecap="round" stroke-dasharray="439.82" stroke-dashoffset="439.82"
+        transform="rotate(-90 75 75)" id="arc" style="transition:stroke-dashoffset 1.5s ease"/>
+      <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#6c63ff"/><stop offset="100%" stop-color="#9f9aff"/></linearGradient></defs>
+    </svg>
+    <div class="iq-inner"><div class="iq-num" id="riq">--</div><div class="iq-lbl">IQ BALL</div></div>
+  </div>
+  <div class="lvl-badge" id="rlvl"></div>
+  <h2 id="rtit"></h2>
+  <p class="iq-cm" id="rcm"></p>
+  <div class="stats3">
+    <div class="stat-c"><div class="stat-v" id="rcor">-</div><div class="stat-l">To'g'ri javob</div></div>
+    <div class="stat-c"><div class="stat-v" id="rpct">-</div><div class="stat-l">Dunyo aholisi</div></div>
+    <div class="stat-c"><div class="stat-v" id="rrnk">-</div><div class="stat-l">Reyting o'rni</div></div>
+  </div>
+  <div class="catbars" id="catbars"></div>
+  <div class="cert-wrap">
+    <div class="cert-card">
+      <div class="cert-top">🎓 Rasmiy IQ Sertifikati</div>
+      <div class="cert-brain">🧠</div>
+      <div class="cert-title">IQ Intellekt Sertifikati</div>
+      <div class="cert-name" id="c-name">--</div>
+      <div class="cert-iq-box">
+        <div class="cert-iq-num" id="c-iq">--</div>
+        <div class="cert-iq-lbl">IQ BALL</div>
+      </div>
+      <div class="cert-lvl" id="c-lvl"></div>
+      <div class="cert-row"><span id="c-pct"></span><span>·</span><span id="c-date"></span></div>
+      <div class="cert-badges" id="c-badges"></div>
+      <div class="cert-footer">🧠 IQ TEST Bot</div>
+    </div>
+  </div>
+  <div class="rbs">
+    <button class="btn-gold" onclick="shareCert()">📤 Sertifikatni botga yuborish</button>
+    <button class="btn-pu" onclick="goRating()">🏆 Reytingni ko'rish</button>
+    <button class="btn-gr" onclick="goForm()">↺ Qayta topshirish</button>
+  </div>
+  <div class="bnv">
+    <button class="nb" onclick="showScr('sw')"><div class="ni">🏠</div>Bosh</button>
+    <button class="nb" onclick="goRating()"><div class="ni">🏆</div>Reyting</button>
+  </div>
+</div>
+
+<!-- RATING -->
+<div class="screen" id="srt">
+  <div class="ph"><button class="bk" onclick="showScr('sw')">←</button><h2>🏆 Reyting</h2></div>
+  <div class="rl" id="rl"><div class="emp">Yuklanmoqda...</div></div>
+  <div class="bnv">
+    <button class="nb" onclick="showScr('sw')"><div class="ni">🏠</div>Bosh</button>
+    <button class="nb on"><div class="ni">🏆</div>Reyting</button>
+  </div>
+</div>
+
+<script>
+// ── Telegram ──
+const tg = window.Telegram?.WebApp;
+if(tg){ tg.ready(); tg.expand(); }
+const TGU  = tg?.initDataUnsafe?.user;
+const UID  = TGU?.id ? String(TGU.id) : ('g_'+Math.random().toString(36).slice(2,8));
+const UNAME= TGU ? (TGU.first_name+(TGU.last_name?' '+TGU.last_name:'')) : '';
+
+// ── SVG ──
+const W=(b,w=220,h=220)=>`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${b}</svg>`;
+const BG=`<rect width="999" height="999" fill="#1e1b38"/>`;
+const [P,B2,G,Y,R,W2,GR,QC]=['#6c63ff','#3b82f6','#22c55e','#f5c842','#ef4444','#d1ceff','#5a5580','#9f9aff'];
+const Sq=(x,y,s,c,f=1)=>f?`<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="${c}" rx="2"/>`:
+  `<rect x="${x}" y="${y}" width="${s}" height="${s}" fill="none" stroke="${c}" stroke-width="2.5" rx="2"/>`;
+const Ci=(x,y,r,c,f=1)=>f?`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`:
+  `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${c}" stroke-width="2.5"/>`;
+const Tr=(x,y,s,c,f=1)=>{const p=`${x},${y-s} ${x-s*.9},${y+s*.6} ${x+s*.9},${y+s*.6}`;
+  return f?`<polygon points="${p}" fill="${c}"/>`:`<polygon points="${p}" fill="none" stroke="${c}" stroke-width="2.5"/>`;};
+const Di=(x,y,s,c,f=1)=>{const p=`${x},${y-s} ${x+s*.7},${y} ${x},${y+s} ${x-s*.7},${y}`;
+  return f?`<polygon points="${p}" fill="${c}"/>`:`<polygon points="${p}" fill="none" stroke="${c}" stroke-width="2.5"/>`;};
+const Ln=(x1,y1,x2,y2,c,w=2.5)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const Tx=(x,y,t,c,s=14,fw=600)=>`<text x="${x}" y="${y}" font-size="${s}" font-weight="${fw}" fill="${c}" text-anchor="middle" dominant-baseline="middle">${t}</text>`;
+const QM=(x,y,s=22)=>Tx(x,y,'?',QC,s,800);
+const Brd=()=>`<rect x="1" y="1" width="218" height="218" fill="none" stroke="#312d50" stroke-width="1.5" rx="8"/>`;
+
+// ── Categories ──
+const CATS={
+  VR:{n:'👁 Vizual',   c:'#6c63ff'},
+  NR:{n:'🔢 Raqamli',  c:'#f5c842'},
+  LR:{n:'⚡ Mantiqiy', c:'#22c55e'},
+  SR:{n:'📐 Fazoviy',  c:'#f87171'},
+  VB:{n:'🔠 Verbal',   c:'#9f9aff'}
+};
+
+// ── 20 Questions ──
+const QS=[
+  {cat:'VR',type:'visual',q:'Matritsa qoidasiga ko\'ra ? o\'rniga qaysi shakl keladi?',
+   main:W(BG+Brd()+Sq(20,20,40,P)+Sq(90,20,40,P,0)+Sq(160,20,40,P)+Sq(20,90,40,P,0)+Sq(90,90,40,P)+Sq(160,90,40,P,0)+Sq(20,160,40,P)+Sq(90,160,40,P,0)+QM(180,180,22)),
+   opts:[W(BG+Sq(40,40,100,P,0)+Brd()),W(BG+Sq(40,40,100,P)+Brd()),W(BG+Ci(110,110,50,P,0)+Brd()),W(BG+Sq(40,40,100,B2)+Brd())],ans:0},
+
+  {cat:'NR',type:'text',q:'Ketma-ketlikni toping: 2, 6, 18, 54, ?',opts:['108','162','216','164'],ans:1},
+
+  {cat:'VB',type:'text',q:'Qaysi so\'z qolganlardan farq qiladi?',opts:['Delfin','Fil','Mushuk','Ilonbaliq'],ans:3},
+
+  {cat:'LR',type:'text',q:'Barcha mushuklar hayvon. Ba\'zi hayvonlar yovvoyi. Demak:',
+   opts:['Barcha mushuklar yovvoyi','Ba\'zi mushuklar yovvoyi bo\'lishi mumkin','Hech qanday mushuk yovvoyi emas','Yovvoyi hayvonlar faqat mushuklardir'],ans:1},
+
+  {cat:'SR',type:'visual',q:'Shakl 90° soat yo\'nalishi bo\'yicha aylansa qanday ko\'rinadi?',
+   main:W(BG+Brd()+Sq(70,50,80,P,0)+Ci(110,90,18,Y)+Sq(82,62,16,P)),
+   opts:[
+     W(BG+Brd()+`<rect x="50" y="70" width="80" height="80" fill="none" stroke="${P}" stroke-width="2.5" rx="2"/>`+Ci(90,110,18,Y)+Sq(62,82,16,P)),
+     W(BG+Brd()+Sq(70,50,80,P,0)+Ci(110,90,18,Y)+Sq(82,62,16,P)),
+     W(BG+Brd()+`<rect x="50" y="70" width="80" height="80" fill="none" stroke="${P}" stroke-width="2.5" rx="2"/>`+Ci(130,90,18,Y)),
+     W(BG+Brd()+`<rect x="70" y="60" width="80" height="80" fill="none" stroke="${B2}" stroke-width="2.5" rx="2"/>`+Ci(90,130,18,Y))
+   ],ans:0},
+
+  {cat:'NR',type:'text',q:'5 ta kitob 75 000 so\'m tursa, 8 ta kitob necha so\'m?',opts:['100 000','110 000','120 000','130 000'],ans:2},
+
+  {cat:'VR',type:'visual',q:'Naqshni davom ettiring — ? qaysi?',
+   main:W(BG+Brd()+Ci(40,40,22,P)+Sq(79,18,44,B2)+Tr(180,40,22,G)+Ci(40,110,22,P,0)+Sq(79,88,44,B2,0)+Tr(180,110,22,G,0)+Ci(40,180,22,P)+Sq(79,158,44,B2)+QM(180,180,22)),
+   opts:[W(BG+Tr(110,110,55,G,0)+Brd()),W(BG+Tr(110,110,55,G)+Brd()),W(BG+Ci(110,110,55,G)+Brd()),W(BG+Sq(55,55,110,G)+Brd())],ans:0},
+
+  {cat:'VB',type:'text',q:'"Kitob" — "O\'qish" ga qanday bog\'liq bo\'lsa, "Skalpel" nimaga shunday?',
+   opts:['Kasalxona','Shifokor','Operatsiya','Jarrohlik'],ans:3},
+
+  {cat:'LR',type:'text',q:'"KITOB" so\'zining harflari teskarisiga o\'girilsa qanday bo\'ladi?',opts:['BOTIK','BOTKI','TIBKO','TOKIB'],ans:0},
+
+  {cat:'SR',type:'visual',q:'Oyna aksi qaysi? (vertikal o\'q bo\'yicha)',
+   main:W(BG+Brd()+Sq(30,80,60,P,0)+Ci(60,110,18,Y)+Ln(110,30,110,190,GR,1.5)),
+   opts:[
+     W(BG+Brd()+Sq(130,80,60,P,0)+Ci(190,110,18,Y)),
+     W(BG+Brd()+Sq(130,80,60,P,0)+Ci(160,110,18,Y)),
+     W(BG+Brd()+Sq(30,80,60,P,0)+Ci(60,110,18,Y)),
+     W(BG+Brd()+Sq(130,80,60,P)+Ci(160,110,18,Y,0))
+   ],ans:0},
+
+  {cat:'NR',type:'text',q:'Tomonlari 3, 4, 5 bo\'lgan uchburchakning yuzasi necha birlik²?',opts:['5','6','7','8'],ans:1},
+
+  {cat:'VR',type:'visual',q:'Katta shakl ichidagi kichik shakl qoidasi bo\'yicha ? nima?',
+   main:W(BG+Brd()+Sq(15,15,55,P,0)+Ci(42,42,16,P)+Ci(95,42,27,B2,0)+Sq(82,29,26,B2)+Tr(185,42,27,G,0)+QM(185,42,20)),
+   opts:[W(BG+Tr(110,110,55,G)+Brd()),W(BG+Ci(110,110,55,G)+Brd()),W(BG+Sq(55,55,110,G)+Brd()),W(BG+Di(110,110,45,G)+Brd())],ans:0},
+
+  {cat:'LR',type:'text',q:'5 kishi har biri har birisi bilan qo\'l siqishadi. Jami necha marta?',opts:['8','10','12','15'],ans:1},
+
+  {cat:'VB',type:'text',q:'"Quvonchli" so\'ziga ma\'nodosh so\'z qaysi?',opts:['G\'amgin','Xursand','Mahzun','Tashvishli'],ans:1},
+
+  {cat:'SR',type:'visual',q:'Rasmda nechta kub ko\'rinayapti?',
+   main:W(BG+Brd()+
+     `<polygon points="50,160 110,130 170,160 110,190" fill="#312d50" stroke="${P}" stroke-width="1.5"/>
+      <polygon points="50,100 110,70 110,130 50,160" fill="#231f3a" stroke="${P}" stroke-width="1.5"/>
+      <polygon points="110,70 170,100 170,160 110,130" fill="#1a1730" stroke="${P}" stroke-width="1.5"/>
+      <polygon points="90,70 110,60 130,70 110,80" fill="#312d50" stroke="${P}" stroke-width="1.5"/>
+      <polygon points="90,70 90,90 110,100 110,80" fill="#231f3a" stroke="${P}" stroke-width="1.5"/>
+      <polygon points="110,80 130,70 130,90 110,100" fill="#1a1730" stroke="${P}" stroke-width="1.5"/>`+
+     Tx(110,195,'Nechta kub?',GR,11)),
+   opts:[W(BG+Tx(110,110,'4',W2,60,800)+Brd()),W(BG+Tx(110,110,'5',W2,60,800)+Brd()),W(BG+Tx(110,110,'6',W2,60,800)+Brd()),W(BG+Tx(110,110,'3',W2,60,800)+Brd())],ans:0},
+
+  {cat:'NR',type:'text',q:'Ketma-ketlik: 1, 1, 2, 3, 5, 8, 13, ?',opts:['18','20','21','25'],ans:2},
+
+  {cat:'LR',type:'text',q:'Mahsulot 150 000 so\'m. 40% chegirma bo\'lsa, narxi necha so\'m?',opts:['60 000','80 000','90 000','100 000'],ans:2},
+
+  {cat:'VR',type:'visual',q:'Naqshga ko\'ra ? o\'rniga nechta nuqta keladi?',
+   main:W(BG+Brd()+
+     Ci(40,40,9,P)+
+     Ci(100,33,9,B2)+Ci(118,33,9,B2)+
+     Ci(168,27,9,G)+Ci(185,27,9,G)+Ci(176,43,9,G)+
+     Ci(33,105,9,P)+Ci(50,105,9,P)+
+     Ci(95,98,9,B2)+Ci(112,98,9,B2)+Ci(103,114,9,B2)+
+     Ci(162,92,9,G)+Ci(179,92,9,G)+Ci(170,108,9,G)+Ci(187,108,9,G)+
+     Ci(33,172,9,P)+Ci(50,172,9,P)+Ci(41,157,9,P)+
+     Ci(95,165,9,B2)+Ci(112,165,9,B2)+Ci(103,181,9,B2)+Ci(120,181,9,B2)+
+     QM(180,170,22)),
+   opts:[
+     W(BG+Ci(70,70,9,G)+Ci(87,70,9,G)+Ci(104,70,9,G)+Ci(121,70,9,G)+Ci(78,86,9,G)+Ci(95,86,9,G)+Brd()),
+     W(BG+Ci(70,70,9,G)+Ci(87,70,9,G)+Ci(104,70,9,G)+Ci(121,70,9,G)+Ci(138,70,9,G)+Brd()),
+     W(BG+Ci(70,70,9,G)+Ci(87,70,9,G)+Ci(78,86,9,G)+Ci(95,86,9,G)+Brd()),
+     W(BG+Ci(70,70,9,G)+Ci(87,70,9,G)+Ci(104,70,9,G)+Ci(78,86,9,G)+Ci(95,86,9,G)+Ci(112,86,9,G)+Brd())
+   ],ans:1},
+
+  {cat:'VB',type:'text',q:'"Astronomiya" fani nimani o\'rganadi?',opts:['Atom va molekulalar','Yer osti boyliklari','Osmon jismlari','Tirik organizmlar'],ans:2},
+
+  {cat:'SR',type:'visual',q:'Qog\'oz chapdan o\'ngga buklansa, teshik qayerda chiqadi?',
+   main:W(BG+Brd()+
+     `<rect x="20" y="70" width="160" height="90" fill="none" stroke="${W2}" stroke-width="2" rx="4"/>`+
+     Ln(100,70,100,160,Y,2)+Ci(60,115,14,R)+
+     Tx(110,175,'chapdan → o\'ngga buklanadi',GR,10)),
+   opts:[
+     W(BG+Brd()+`<rect x="20" y="40" width="80" height="90" fill="none" stroke="${W2}" stroke-width="2" rx="4"/>`+Ci(40,85,14,R)+Ci(80,85,14,R)),
+     W(BG+Brd()+`<rect x="20" y="40" width="80" height="90" fill="none" stroke="${W2}" stroke-width="2" rx="4"/>`+Ci(60,85,14,R)),
+     W(BG+Brd()+`<rect x="20" y="40" width="80" height="90" fill="none" stroke="${W2}" stroke-width="2" rx="4"/>`+Ci(40,85,14,R)),
+     W(BG+Brd()+`<rect x="20" y="40" width="80" height="90" fill="none" stroke="${W2}" stroke-width="2" rx="4"/>`+Ci(80,85,14,R))
+   ],ans:0}
+];
+
+// ── Yordamchi funksiyalar ──
+const calcIQ=(score,total)=>Math.round(Math.max(60,Math.min(145,62+(score/total)*82+(Math.random()-.5)*5)));
+const worldPct=iq=>iq>=130?98:iq>=120?91:iq>=110?75:iq>=100?50:iq>=90?25:10;
+const iqLevel=iq=>iq>=130?'🌟 Daho darajasi':iq>=120?'🔥 Yuqori intellekt':iq>=110?'💡 O\'rtachadan yuqori':iq>=90?'👍 O\'rtacha intellekt':'📚 Rivojlanish zarur';
+const iqComment=iq=>iq>=130?'Siz aholining eng aqlli 2% ida!':iq>=120?'Juda yuqori IQ! O\'rtachadan ancha ustunsiiz.':iq>=110?'Intellektingiz o\'rtachadan baland.':iq>=90?'O\'rtacha IQ darajasi. Ko\'pchilik shu oraliqda.':'Mashq qilish bilan natijangiz yaxshilanadi.';
+const lvlColor=iq=>iq>=130?'#f5c842':iq>=120?'#9f9aff':iq>=110?'#6c63ff':iq>=90?'#22c55e':'#f87171';
+
+// ── Lokal storage — faqat joriy qurilmada ──
+const LKEY='iqtest_v5';
+const saveLocal=e=>{try{let a=JSON.parse(localStorage.getItem(LKEY)||'[]');a=a.filter(r=>r.id!==e.id);a.push(e);a.sort((a,b)=>b.iq-a.iq);localStorage.setItem(LKEY,JSON.stringify(a.slice(0,100)));}catch(e){}};
+const getLocal=()=>{try{return JSON.parse(localStorage.getItem(LKEY)||'[]');}catch(e){return[];}};
+
+// ── Botga ma'lumot yuborish ──
+// Bu funksiya mini app yopilganda botga xabar yuboradi
+// Bot web_app_data hodisasi orqali qabul qiladi
+function sendToBot(data){
+  try{
+    if(tg?.sendData){
+      tg.sendData(JSON.stringify(data));
+    }
+  }catch(e){console.error('sendData:',e);}
+}
+
+// ── Navigation ──
+const showScr=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0);};
+const goForm=()=>{if(UNAME)document.getElementById('inp').value=UNAME;showScr('sf');};
+const goRating=()=>{showScr('srt');loadRating();};
+
+// ── Form ──
+let selG='',selA='';
+const sg=g=>{selG=g;document.getElementById('gm').classList.toggle('on',g==='m');document.getElementById('gf').classList.toggle('on',g==='f');};
+const sa=(btn,a)=>{selA=a;document.querySelectorAll('#sf .sb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');};
+
+// ── Test state ──
+let S={name:'',gender:'',age:'',idx:0,score:0,qs:[],done:false,iq:0};
+let answers=[];
+
+function startTest(){
+  S.name=document.getElementById('inp').value.trim()||UNAME||'Anonim';
+  S.gender=selG; S.age=selA; S.idx=0; S.score=0; S.done=false; answers=[];
+  S.qs=[...QS].sort(()=>Math.random()-.5);
+  showScr('st'); renderQ();
+}
+
+function renderQ(){
+  const q=S.qs[S.idx],tot=S.qs.length;
+  document.getElementById('pf').style.width=(S.idx/tot*100)+'%';
+  document.getElementById('qn').textContent=`${S.idx+1} / ${tot}`;
+  document.getElementById('qsc').textContent=`✓ ${S.score}`;
+  document.getElementById('qcat').innerHTML=`<span style="color:${CATS[q.cat].c}">${CATS[q.cat].n}</span>`;
+  document.getElementById('ql').textContent=q.q;
+  const vb=document.getElementById('qvbox');
+  if(q.type==='visual'){vb.style.display='flex';vb.innerHTML=q.main;}
+  else vb.style.display='none';
+  document.getElementById('nxt').style.display='none';
+  S.done=false;
+  renderAnswers(q);
+}
+
+function renderAnswers(q){
+  const c=document.getElementById('qans'); c.innerHTML='';
+  if(q.type==='visual'){
+    const g=document.createElement('div'); g.className='vgrid';
+    q.opts.forEach((o,i)=>{
+      const b=document.createElement('button'); b.className='vopt';
+      const l=document.createElement('span'); l.className='vltr'; l.textContent=String.fromCharCode(65+i); b.appendChild(l);
+      const d=document.createElement('div'); d.style.cssText='width:100%;display:flex;align-items:center;justify-content:center'; d.innerHTML=o; b.appendChild(d);
+      b.onclick=()=>pick(i); g.appendChild(b);
+    }); c.appendChild(g);
+  }else{
+    const l=document.createElement('div'); l.className='aol';
+    q.opts.forEach((o,i)=>{
+      const b=document.createElement('button'); b.className='ao';
+      b.innerHTML=`<div class="ltr">${String.fromCharCode(65+i)}</div><span>${o}</span>`;
+      b.onclick=()=>pick(i); l.appendChild(b);
+    }); c.appendChild(l);
+  }
+}
+
+function pick(i){
+  if(S.done)return; S.done=true;
+  const q=S.qs[S.idx]; answers.push(i);
+  const iv=q.type==='visual';
+  const bs=document.querySelectorAll(iv?'.vopt':'.ao');
+  if(i===q.ans){S.score++;bs[i].classList.add('cor');tg?.HapticFeedback?.impactOccurred('medium');}
+  else{bs[i].classList.add('wrg');bs[q.ans].classList.add('shw');tg?.HapticFeedback?.impactOccurred('rigid');}
+  document.getElementById('qsc').textContent=`✓ ${S.score}`;
+  document.getElementById('nxt').style.display='block';
+}
+
+function nextQ(){ S.idx++; if(S.idx>=S.qs.length)finish(); else renderQ(); }
+
+function finish(){
+  showScr('sl');
+  const ids=['l1','l2','l3','l4','l5'];
+  ids.forEach((id,i)=>setTimeout(()=>{
+    document.getElementById(id).classList.add('sh');
+    if(i>0)document.getElementById(ids[i-1]).classList.add('dn');
+  },i*700));
+  setTimeout(()=>{ document.getElementById('l5').classList.add('dn'); buildResult(); },4000);
+}
+
+function buildResult(){
+  const iq=calcIQ(S.score,S.qs.length); S.iq=iq;
+  const catD={VR:{r:0,t:0},NR:{r:0,t:0},LR:{r:0,t:0},SR:{r:0,t:0},VB:{r:0,t:0}};
+  S.qs.forEach((q,i)=>{catD[q.cat].t++;if(answers[i]===q.ans)catD[q.cat].r++;});
+
+  const entry={id:UID,name:S.name,iq,gender:S.gender,age:S.age,score:S.score,total:S.qs.length,date:new Date().toLocaleDateString('uz-UZ')};
+
+  // 1. Lokal saqlash (shu qurilmada)
+  saveLocal(entry);
+
+  // 2. Botga avtomatik yuborish — bot database.json ga saqlaydi
+  //    Reyting va sertifikat uchun bir xil ma'lumot
+  sendToBot({action:'result', ...entry});
+
+  // ── UI ──
+  document.getElementById('riq').textContent=iq;
+  const circ=439.82, offset=circ-((iq-60)/85)*circ;
+  setTimeout(()=>{ document.getElementById('arc').style.strokeDashoffset=Math.max(5,offset); },300);
+
+  const wp=worldPct(iq), lvl=iqLevel(iq), cm=iqComment(iq), lc=lvlColor(iq);
+  const le=document.getElementById('rlvl'); le.textContent=lvl; le.style.cssText=`background:${lc}22;border:1px solid ${lc};color:${lc}`;
+  document.getElementById('rtit').textContent=lvl.split(' ').slice(1).join(' ');
+  document.getElementById('rcm').textContent=cm;
+  document.getElementById('rcor').textContent=`${S.score}/${S.qs.length}`;
+  document.getElementById('rpct').textContent='Top '+(100-wp)+'%';
+  const rs=getLocal(), rank=rs.findIndex(r=>r.id===UID)+1;
+  document.getElementById('rrnk').textContent='#'+(rank||rs.length);
+
+  // Category bars
+  document.getElementById('catbars').innerHTML=Object.entries(catD).map(([k,v])=>{
+    const pct=v.t>0?Math.round(v.r/v.t*100):0, ci=CATS[k];
+    return`<div class="cb-row"><div class="cb-lbl">${ci.n}</div><div class="cb-bar"><div class="cb-fill" data-pct="${pct}" style="background:linear-gradient(90deg,${ci.c}88,${ci.c})"></div></div><div class="cb-pct">${pct}%</div></div>`;
+  }).join('');
+
+  // Sertifikat
+  document.getElementById('c-name').textContent=S.name;
+  document.getElementById('c-iq').textContent=iq;
+  document.getElementById('c-lvl').textContent=lvl;
+  document.getElementById('c-pct').textContent=`Dunyo aholisining top ${100-wp}%`;
+  document.getElementById('c-date').textContent=new Date().toLocaleDateString('uz-UZ');
+  document.getElementById('c-badges').innerHTML=[`IQ ${iq}`,`${S.score}/${S.qs.length} to'g'ri`,`Top ${100-wp}%`].map(b=>`<span class="cbadge">${b}</span>`).join('');
+
+  showScr('sr');
+  setTimeout(()=>{ document.querySelectorAll('.cb-fill').forEach(el=>{ el.style.width=el.dataset.pct+'%'; }); },400);
+}
+
+// Sertifikatni botga yuborish tugmasi
+function shareCert(){
+  // Botga sertifikat so'rovi yuboramiz
+  sendToBot({action:'cert', id:UID, name:S.name, iq:S.iq, score:S.score, total:S.qs.length});
+  if(tg){ tg.close(); } // mini appni yopadi, bot sertifikatni yuboradi
+}
+
+// ── Reyting ──
+// Mini app da faqat shu qurilmadagilar ko'rinadi
+// Bot reytingi (/reyting) barcha foydalanuvchilarni ko'rsatadi
+function loadRating(){
+  const rs=getLocal();
+  const el=document.getElementById('rl');
+  if(!rs.length){ el.innerHTML='<div class="emp">📭 Hali hech kim test topshirmagan.<br><br>Birinchi bo\'ling! 🚀</div>'; return; }
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=rs.slice(0,50).map((r,i)=>{
+    const me=r.id===UID;
+    return`<div class="ri${me?' me':''}">
+      <div class="rk">${medals[i]||i+1}</div>
+      <div class="rin">
+        <div class="rn">${r.name}${me?' <span style="color:var(--pu2);font-size:10px">(Siz)</span>':''}</div>
+        <div class="rs">${iqLevel(r.iq)} · ${r.date||''}</div>
+      </div>
+      <div class="riq">${r.iq}</div>
+    </div>`;
+  }).join('');
+}
+
+if(tg?.BackButton){ tg.BackButton.onClick(()=>{ const c=document.querySelector('.screen.active')?.id; if(['sf','srt','sr'].includes(c))showScr('sw'); }); }
+</script>
+</body>
+</html>
